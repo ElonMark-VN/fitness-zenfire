@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fitness Zenfire</string>
+
+    <string name="onboardingHeading1">Chọn bài tập yêu thích của bạn</string>
+    <string name="onboardingHeading2">Hướng dẫn từ các chuyên gia có chứng nhận</string>
+    <string name="onboardingHeading3">Theo dõi tiến trình của bạn hàng ngày</string>
+    <string name="onboardingText1">Chọn từ nhiều bài tập thể dục và chương trình luyện tập</string>
+    <string name="onboardingText2">Các hướng dẫn từ chuyên gia đảm bảo bạn luyện tập an toàn và hiệu quả</string>
+    <string name="onboardingText3">Theo dõi tiến trình và cải thiện sức khỏe của bạn mỗi ngày</string>
+
+</resources>

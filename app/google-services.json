@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "953583459368",
+    "project_id": "fitness-zenfire-d7483",
+    "storage_bucket": "fitness-zenfire-d7483.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953583459368:android:06db5fa76c564cc4b8a91d",
+        "android_client_info": {
+          "package_name": "net.pro.fitnesszenfire"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "953583459368-dt5lsjtuukke5h9t2j21cg54a5i57c6c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "net.pro.fitnesszenfire",
+            "certificate_hash": "9b3d4db065f842680056c9a1af11ae9503ed7ccc"
+          }
+        },
+        {
+          "client_id": "953583459368-n19fjuptclqg1qktu53v7v6hlfjfm9ot.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrVvUs_S5ZOLXRZIeNG6AcOab8m-Jnu6U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "953583459368-n19fjuptclqg1qktu53v7v6hlfjfm9ot.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

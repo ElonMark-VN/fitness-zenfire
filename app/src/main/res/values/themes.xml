@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.FitnessZenfire" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.SplashScreenTheme" parent="Theme.SplashScreen">
+        <!--        <item name="android:windowBackground">@color/backgroundDark</item> &lt;!&ndash; Set your desired background color &ndash;&gt;-->
+        <item name="windowSplashScreenBackground">@android:color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/fitnesslogo</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="postSplashScreenTheme">@style/Theme.FitnessZenfire</item>
+    </style>
+</resources>
