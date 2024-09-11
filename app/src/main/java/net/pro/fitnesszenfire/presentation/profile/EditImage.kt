@@ -69,7 +69,7 @@ fun EditAvatar(
     context.window.navigationBarColor = backgroundLight.toArgb()
 
 
-    val isLoading by viewModel.isLoading
+    val isLoading = true
 
     Box(
         modifier = Modifier

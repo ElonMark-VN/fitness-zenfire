@@ -74,5 +74,15 @@
     <string name="facebook_app_id">360714353532794</string>
     <string name="facebook_client_token">d8891703d2fcfdfdc7700d9e9feec1f6</string>
     <string name="fb_login_protocol_scheme">fb360714353532794</string>
+    <string name="web_client_id">953583459368-n19fjuptclqg1qktu53v7v6hlfjfm9ot.apps.googleusercontent.com</string>
+    <string name="feed">Feed</string>
+    <string name="challenge">Challenge</string>
+    <string name="start_tracking">start tracking\n</string>
+    <string name="post_image">post_image\n</string>
+
+
+    //e.g your package name + ".fileprovider"
+    <string name="fileprovider">net.pro.fitnesszenfire.fileprovider</string>
 
 </resources>
+

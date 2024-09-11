@@ -1,7 +1,8 @@
 package net.pro.fitnesszenfire.presentation.login
 
 sealed class LoginEvent {
-//    data class EnteredEmail(val value: String) : LoginEvent()
-//    data class EnteredPassword(val value: String) : LoginEvent()
-//    data class PerformLogin(val onClick: () -> Unit) : LoginEvent()
+    object LoginWithGoogle : LoginEvent()
+    object LoginWithFacebook : LoginEvent()
+    object LoginWithAppleId : LoginEvent()
+    data class ShowSnackbar(val message: String) : LoginEvent()
 }

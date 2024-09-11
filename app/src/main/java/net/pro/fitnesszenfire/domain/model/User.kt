@@ -1,16 +1,25 @@
 package net.pro.fitnesszenfire.domain.model
 
-data class Address(
-    val ward: String = "",
-    val street: String = "",
-    val houseNumber: String = ""
-)
+import com.google.firebase.firestore.PropertyName
+
 
 data class User(
-    val id: String = "",
-    val userName: String = "",
-    val email: String = "",
-    val phoneNumber: String = "",
-    val avatar: String = "",
-    val address: Address = Address()
+        @set:PropertyName("uid")
+        @get:PropertyName("uid")
+        var id: String? = "",
+
+        @set:PropertyName("name")
+        @get:PropertyName("name")
+        var userName: String? = "",
+
+        @set:PropertyName("email")
+        @get:PropertyName("email")
+        var email: String? = "",
+
+        @set:PropertyName("photoUrl")
+        @get:PropertyName("photoUrl")
+        var avatar: String? = "",
+
+        var followers: List<String>? = null,
+        var following: List<String>? = null,
 )

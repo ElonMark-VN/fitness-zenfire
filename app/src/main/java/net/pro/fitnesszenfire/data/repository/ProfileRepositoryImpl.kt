@@ -49,7 +49,7 @@ class ProfileRepositoryImpl @Inject constructor(
 
     override suspend fun updateProfile(user: User): Result<Unit> {
         return try {
-            firestore.collection("users").document(user.id).set(user).await()
+            user.id?.let { firestore.collection("users").document(it).set(user).await() }
             saveUserData(user)
             Result.success(Unit)
         } catch (e: Exception) {

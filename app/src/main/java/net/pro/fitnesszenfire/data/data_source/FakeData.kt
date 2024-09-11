@@ -1,7 +1,6 @@
 package net.pro.fitnesszenfire.data.data_source
 
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -10,9 +9,69 @@ import net.pro.fitnesszenfire.domain.model.*
 
 
 @Composable
-fun FafeData () {
+fun FafeData() {
 
 }
+
+val optionActivity = listOf(
+    Activity(
+        image = R.drawable.cycling,
+        name = "Cycling"
+    ),
+    Activity(
+        image = R.drawable.run,
+        name = "Running"
+    ),
+    Activity(
+        image = R.drawable.walking,
+        name = "Walking"
+    ),
+    Activity(
+        image = R.drawable.swimming,
+        name = "Swimming"
+    ),
+    Activity(
+        image = R.drawable.hiking,
+        name = "Hiking"
+    ),
+    Activity(
+        image = R.drawable.weight,
+        name = "Weight Lifting"
+    ),
+    Activity(
+        image = R.drawable.nordicwarking,
+        name = "Nordic Walking"
+    ),
+    Activity(
+        image = R.drawable.surfing,
+        name = "Surfing"
+    ),
+    Activity(
+        image = R.drawable.skate_boarding,
+        name = "Skate Boarding"
+    ),
+    Activity(
+        image = R.drawable.kayaking,
+        name = "Kayaking"
+    ),
+    Activity(
+        image = R.drawable.row,
+        name = "Rowing"
+    ),
+    Activity(
+        image = R.drawable.kitesurfing,
+        name = "Kite Surfing"
+    ),
+    Activity(
+        image = R.drawable.snow_board,
+        name = "Snow Boarding"
+    ),
+    Activity(
+        image = R.drawable.skyling,
+        name = "Downhill Skiing"
+    )
+)
+
 val menu1 = listOf(
     MenuItem(
         dish = "Fish and Chips",
@@ -503,7 +562,7 @@ val restaurantList = listOf(
         variety = "North Indian",
         place = "Ketekibari",
         averagePrice = 2.0,
-        image = R.drawable.dosa,
+        image = R.drawable.applepie,
         menu = menu2
     ),
     Restaurant(
@@ -514,7 +573,7 @@ val restaurantList = listOf(
         variety = "Chinese",
         place = "Mission Charali",
         averagePrice = 3.5,
-        image = R.drawable.chinese,
+        image = R.drawable.biryani,
         menu = menu3
     ),
     Restaurant(
@@ -606,7 +665,7 @@ val restaurantList = listOf(
         variety = "Indian",
         place = "Gauli Gaon",
         averagePrice = 2.0,
-        image = R.drawable.dosa,
+        image = R.drawable.applepie,
         menu = menu3
     ),
     Restaurant(
@@ -630,7 +689,7 @@ val restaurantList = listOf(
         variety = "Snacks",
         place = "Porua Charali",
         averagePrice = 3.5,
-        image = R.drawable.chinese,
+        image = R.drawable.applepie,
         menu = menu2
     ),
     Restaurant(
@@ -687,19 +746,17 @@ val adList = listOf(
         title = "Order groceries",
         subTitle = "Order groceries from local vendors",
         color = Color(0xFF91CEE8),
-        image = R.drawable.groceries
+        image = R.drawable.applepie
     ),
     Advertisement(
         title = "Pay with UPI",
         subTitle = "Get extra 15% discount with UPI payment",
         color = Color(0xFFA791E8),
-        image = R.drawable.upi
+        image = R.drawable.applepie
 
     )
 
 )
-
-
 
 
 val recommendedList = listOf(
@@ -716,7 +773,7 @@ val recommendedList = listOf(
         name = "Topping"
     ),
     FoodItem(
-        image = R.drawable.chinese,
+        image = R.drawable.burger,
         name = "Khác"
     )
 )
@@ -741,7 +798,7 @@ val favouriteList = listOf(
         variety = "Chinese",
         place = "Mission Charali",
         averagePrice = 3.5,
-        image = R.drawable.chinese,
+        image = R.drawable.camera,
         menu = menu3
     ),
     Restaurant(
@@ -803,5 +860,8 @@ val cartList = listOf(
         2
     )
 )
+
+
+
 
 

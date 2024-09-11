@@ -1,53 +1,73 @@
 package net.pro.fitnesszenfire.presentation.login
 
-import android.app.Activity
-import android.content.Context
-import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.facebook.AccessToken
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
+import com.google.android.gms.auth.api.identity.BeginSignInResult
+import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FacebookAuthProvider
-import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import net.pro.fitnesszenfire.data.data_source.DataStoreManager
+import net.pro.fitnesszenfire.domain.model.Response
 import net.pro.fitnesszenfire.domain.repository.LoginRepository
 import javax.inject.Inject
+
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginRepo: LoginRepository,
-    private val firebaseAuth: FirebaseAuth
+    private val repository: LoginRepository,
+    val oneTapClient: SignInClient,
+    private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
-    private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow: SharedFlow<UiEvent> = _eventFlow
+    var oneTapSignInResponse = mutableStateOf<Response<BeginSignInResult>>(Response.Success(null))
+    var googleSignInResponse = mutableStateOf<Response<FirebaseAuth>>(Response.Success(null))
+    var saveUserToFirestoreResponse = mutableStateOf<Response<Void>>(Response.Success(null))
+    var isUserLoggedIn = mutableStateOf(false)
+    var isCheckCompleted = mutableStateOf(false)
 
-    fun onFacebookLoginSuccess() {
+    init {
+        checkUserLoggedIn()
+    }
+
+    private fun checkUserLoggedIn() {
         viewModelScope.launch {
-            _eventFlow.emit(UiEvent.ShowSnackbar("Login Successful"))
+            val userId = dataStoreManager.userIdFlow.first()
+            isUserLoggedIn.value = userId != null
+            isCheckCompleted.value = true
         }
     }
 
-    fun onFacebookLoginError(error: Exception) {
-        viewModelScope.launch {
-            _eventFlow.emit(UiEvent.ShowSnackbar("Authentication failed: ${error.message}"))
+    fun oneTapSignIn() = viewModelScope.launch(Dispatchers.IO) {
+        oneTapSignInResponse.value = Response.Loading
+        oneTapSignInResponse.value = repository.oneTapSignIn()
+    }
+
+    fun signInWithGoogle(credential: SignInCredential) = viewModelScope.launch(Dispatchers.IO) {
+        googleSignInResponse.value = Response.Loading
+        val response = repository.signInWithGoogle(credential)
+        googleSignInResponse.value = response
+
+        if (response is Response.Success) {
+            val user = response.data?.currentUser
+            user?.let {
+                val userData = mapOf<String, Any>(
+                    "uid" to it.uid,
+                    "name" to (it.displayName ?: ""),
+                    "email" to (it.email ?: ""),
+                    "photoUrl" to (it.photoUrl?.toString() ?: "")
+                )
+                saveUserToFirestore(it.uid, userData)
+                dataStoreManager.saveUser(it.uid, it.displayName ?: "", it.email ?: "", it.photoUrl?.toString() ?: "")
+            }
         }
     }
 
-    fun signOut() {
-        firebaseAuth.signOut()
-        LoginManager.getInstance().logOut()
-    }
-
-    fun checkCurrentUser() {
-        val currentUser = firebaseAuth.currentUser
-        // Update UI based on current user
+    private fun saveUserToFirestore(userId: String, userData: Map<String, Any>) = viewModelScope.launch(Dispatchers.IO) {
+        saveUserToFirestoreResponse.value = Response.Loading
+        saveUserToFirestoreResponse.value = repository.saveUserToFirestore(userId, userData)
     }
 }

@@ -1,15 +1,25 @@
 package net.pro.fitnesszenfire.presentation.profile
 
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import net.pro.fitnesszenfire.domain.model.Address
+import net.pro.fitnesszenfire.data.data_source.DataStoreManager
 import net.pro.fitnesszenfire.domain.model.User
 import net.pro.fitnesszenfire.domain.repository.LoginRepository
 import net.pro.fitnesszenfire.domain.repository.ProfileRepository
@@ -20,72 +30,45 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
-    private val loginRepository: LoginRepository
+    private val loginRepository: LoginRepository,
+    private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
-    private val _user = mutableStateOf(User())
-    val user: State<User> = _user
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user.asStateFlow()
 
-    private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    private val _userAvatarUrl = mutableStateOf("")
+    val userAvatarUrl: State<String> = _userAvatarUrl
 
-    private val _isLoading = mutableStateOf(false)
-    val isLoading: State<Boolean> = _isLoading
+    fun logUserData() {
+        viewModelScope.launch {
+            try {
+                val userId = dataStoreManager.userIdFlow.first()
+                val userName = dataStoreManager.userNameFlow.first()
+                val userEmail = dataStoreManager.userEmailFlow.first()
+                val userPhotoUrl = dataStoreManager.userPhotoUrlFlow.first()
 
-//    val loginState = loginRepository.loginState
+                // Log user data
+                println("User ID: $userId - $userName - $userEmail - $userPhotoUrl")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     init {
         viewModelScope.launch {
-            profileRepository.userData.collect { user ->
-                user?.let { _user.value = it }
-            }
-        }
-    }
-
-    fun logout() {
-        viewModelScope.launch {
-//            loginRepository.clearUserData()
-//            loginRepository.toggleLoginState()
-        }
-    }
-
-    fun onEvent(event: ProfileEvent) {
-        when (event) {
-            is ProfileEvent.EnteredPhoneNumber -> {
-                _user.value = user.value.copy(phoneNumber = event.value)
-            }
-            is ProfileEvent.EnteredWard -> {
-                _user.value = user.value.copy(address = user.value.address.copy(ward = event.value)
-                    ?: Address(ward = event.value))
-            }
-            is ProfileEvent.EnteredStreet -> {
-                _user.value = user.value.copy(address = user.value.address.copy(street = event.value)
-                    ?: Address(street = event.value))
-            }
-            is ProfileEvent.EnteredHouseNumber -> {
-                _user.value = user.value.copy(address = user.value.address.copy(houseNumber = event.value)
-                    ?: Address(houseNumber = event.value))
-            }
-            is ProfileEvent.SaveProfile -> {
-                _isLoading.value = true
-                viewModelScope.launch {
-                    val result = profileRepository.updateProfile(user.value)
-                    result.onSuccess {
-                        event.onSave()
-                    }.onFailure {
-                        _eventFlow.emit(
-                            UiEvent.ShowSnackbar(
-                                message = it.message ?: "Failed to update profile"
-                            )
-                        )
-                    }
-                    _isLoading.value = false
-                }
-            }
-
-            is ProfileEvent.EnterUsername -> {
-                _user.value = user.value.copy(userName = event.value)
-            }
+            combine(
+                dataStoreManager.userIdFlow,
+                dataStoreManager.userNameFlow,
+                dataStoreManager.userEmailFlow,
+                dataStoreManager.userPhotoUrlFlow
+            ) { userId, userName, userEmail, userPhotoUrl ->
+                _user.value = User(userId, userName, userEmail, userPhotoUrl)
+            }.catch {
+                // Xử lý lỗi
+            }.collect()
         }
     }
 }

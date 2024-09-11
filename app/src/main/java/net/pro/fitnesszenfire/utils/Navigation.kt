@@ -1,15 +1,12 @@
 package net.pro.fitnesszenfire.utils
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.os.Build
-import androidx.activity.result.ActivityResultLauncher
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -25,19 +22,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.facebook.CallbackManager
-import net.pro.fitnesszenfire.presentation.cart.Cart
 import net.pro.fitnesszenfire.presentation.home.Home
-import net.pro.fitnesszenfire.presentation.home.components.FoodikeBottomNavigation
 import net.pro.fitnesszenfire.presentation.login.LoginScreen
 import net.pro.fitnesszenfire.presentation.onboarding.OnBoarding
 import net.pro.fitnesszenfire.presentation.profile.Profile
 import com.google.accompanist.pager.ExperimentalPagerApi
-import net.pro.fitnesszenfire.presentation.history.History
+import net.pro.fitnesszenfire.presentation.challenge.ChallengeScreen
+import net.pro.fitnesszenfire.presentation.feed.Feed
+import net.pro.fitnesszenfire.presentation.feed.NewPost
 import net.pro.fitnesszenfire.presentation.profile.EditAvatar
 import net.pro.fitnesszenfire.presentation.profile.EditProfile
+import net.pro.fitnesszenfire.presentation.selectActivity.SelectActivity
+import net.pro.fitnesszenfire.presentation.startTracking.StartTracking
+import net.pro.fitnesszenfire.ui.theme.accentOrange
 import net.pro.fitnesszenfire.ui.theme.backgroundLight
-import net.pro.fitnesszenfire.ui.theme.isSelectItemNav
+import net.pro.fitnesszenfire.ui.theme.accentOrange
+import net.pro.fitnesszenfire.ui.theme.linearWhite
+import net.pro.fitnesszenfire.ui.theme.mainColor
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -45,7 +46,6 @@ fun NavigationGraph(
     navController: NavHostController,
     startDestination: String,
     scrollState: LazyListState,
-
 ) {
     NavHost(
         navController = navController,
@@ -57,10 +57,19 @@ fun NavigationGraph(
             OnBoarding(navController = navController)
         }
         composable(
+            route = Screen.StartTracking.route,
+        ) {
+            StartTracking(navController = navController)
+        }
+        composable(
+            route = Screen.Challenge.route,
+        ) {
+            ChallengeScreen(navController = navController)
+        }
+        composable(
             route = Screen.LoginScreen.route,
         ) {
-            LoginScreen(
-            )
+            LoginScreen(navController = navController)
         }
         composable(
             route = Screen.HomeScreen.route
@@ -68,14 +77,19 @@ fun NavigationGraph(
             Home(navController = navController, scrollState = scrollState)
         }
         composable(
-            route = Screen.History.route
+            route = Screen.Feed.route
         ) {
-            History(navHostController = navController)
+            Feed(navController = navController, scrollState = scrollState)
         }
         composable(
-            route = Screen.Cart.route
+            route = Screen.NewPost.route
         ) {
-            Cart(navController = navController)
+            NewPost(navController = navController, scrollState = scrollState)
+        }
+        composable(
+            route = Screen.SelectActivity.route
+        ) {
+            SelectActivity(navController = navController, scrollState = scrollState)
         }
         composable(
             route = Screen.Profile.route
@@ -95,8 +109,6 @@ fun NavigationGraph(
     }
 }
 
-
-
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SetupNavigation(
@@ -112,9 +124,10 @@ fun SetupNavigation(
     Scaffold(
         bottomBar = {
             if ((currentRoute == Screen.HomeScreen.route
-                        || currentRoute == Screen.History.route
-                        || currentRoute == Screen.Cart.route
-                        || currentRoute == Screen.Profile.route) && state
+                        || currentRoute == Screen.Feed.route
+                        || currentRoute == Screen.Challenge.route
+                        || currentRoute == Screen.Profile.route)
+//                && state
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -122,7 +135,7 @@ fun SetupNavigation(
                     Box(
                         contentAlignment = Alignment.Center
                     ) {
-                        BottomBar(navController = navController)
+                        BottomBarWithFAB(navController = navController)
                     }
                 }
             }
@@ -132,35 +145,65 @@ fun SetupNavigation(
             navController = navController,
             scrollState = scrollState,
             startDestination = startDestination,
-
         )
     }
 }
 
+@Composable
+fun BottomBarWithFAB(navController: NavHostController) {
+    Box {
+        // Bottom Navigation Bar
+        BottomBar(navController)
+
+        // Floating Action Button
+        FloatingActionButton(
+            backgroundColor = mainColor,
+            onClick = {
+                navController.navigate(Screen.Challenge.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .offset(y = -32.dp) // Adjust the offset as needed,
+
+
+        ) {
+            Icon(
+                painter = painterResource(net.pro.fitnesszenfire.R.drawable.play),
+                contentDescription = stringResource(net.pro.fitnesszenfire.R.string.start_tracking),
+                tint = Color.White,
+                modifier = Modifier.size(15.dp)
+            )
+        }
+    }
+}
 
 @Composable
 fun BottomBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    FoodikeBottomNavigation(
+    BottomNavigation(
         backgroundColor = backgroundLight
     ) {
         BottomNavigationItem(
             label = {
                 Text(text = stringResource(net.pro.fitnesszenfire.R.string.home))
             },
-
             icon = {
                 Icon(
                     painter = painterResource(net.pro.fitnesszenfire.R.drawable.home),
                     contentDescription = stringResource(net.pro.fitnesszenfire.R.string.home),
                     modifier = Modifier.size(width = 25.dp, height = 25.dp)
-
                 )
             },
-            selectedContentColor = isSelectItemNav,
-            unselectedContentColor = Color.White,
+            selectedContentColor = accentOrange,
+            unselectedContentColor = linearWhite,
             alwaysShowLabel = true,
             selected = currentRoute == Screen.HomeScreen.route,
             onClick = {
@@ -176,21 +219,21 @@ fun BottomBar(navController: NavHostController) {
 
         BottomNavigationItem(
             label = {
-                Text(text = stringResource(net.pro.fitnesszenfire.R.string.history))
+                Text(text = stringResource(net.pro.fitnesszenfire.R.string.feed))
             },
             icon = {
                 Icon(
                     modifier = Modifier.size(25.dp),
                     painter = painterResource(net.pro.fitnesszenfire.R.drawable.history),
-                    contentDescription = stringResource(net.pro.fitnesszenfire.R.string.history),
+                    contentDescription = stringResource(net.pro.fitnesszenfire.R.string.feed),
                 )
             },
-            selectedContentColor = isSelectItemNav,
-            unselectedContentColor = Color.White,
+            selectedContentColor = accentOrange,
+            unselectedContentColor = linearWhite,
             alwaysShowLabel = true,
-            selected = currentRoute == Screen.History.route,
+            selected = currentRoute == Screen.Feed.route,
             onClick = {
-                navController.navigate(Screen.History.route) {
+                navController.navigate(Screen.Feed.route) {
                     popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                     }
@@ -202,21 +245,21 @@ fun BottomBar(navController: NavHostController) {
 
         BottomNavigationItem(
             label = {
-                Text(text = stringResource(net.pro.fitnesszenfire.R.string.cart))
+                Text(text = stringResource(net.pro.fitnesszenfire.R.string.challenge))
             },
             icon = {
                 Icon(
-                    painter = painterResource(net.pro.fitnesszenfire.R.drawable.cart),
-                    contentDescription = stringResource(net.pro.fitnesszenfire.R.string.cart),
+                    painter = painterResource(net.pro.fitnesszenfire.R.drawable.challenge),
+                    contentDescription = stringResource(net.pro.fitnesszenfire.R.string.challenge),
                     modifier = Modifier.size(width = 25.dp, height = 25.dp)
                 )
             },
-            selectedContentColor = isSelectItemNav,
-            unselectedContentColor = Color.White,
+            selectedContentColor = accentOrange,
+            unselectedContentColor = linearWhite,
             alwaysShowLabel = true,
-            selected = currentRoute == Screen.Cart.route,
+            selected = currentRoute == Screen.Challenge.route,
             onClick = {
-                navController.navigate(Screen.Cart.route) {
+                navController.navigate(Screen.Challenge.route) {
                     popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                     }
@@ -233,12 +276,12 @@ fun BottomBar(navController: NavHostController) {
             icon = {
                 Icon(
                     painter = painterResource(net.pro.fitnesszenfire.R.drawable.user),
-                    contentDescription = stringResource(net.pro.fitnesszenfire.R.string.cart),
+                    contentDescription = stringResource(net.pro.fitnesszenfire.R.string.profile),
                     modifier = Modifier.size(width = 25.dp, height = 25.dp)
                 )
             },
-            selectedContentColor = isSelectItemNav,
-            unselectedContentColor = Color.White,
+            selectedContentColor = accentOrange,
+            unselectedContentColor = linearWhite,
             alwaysShowLabel = true,
             selected = currentRoute == Screen.Profile.route,
             onClick = {
@@ -253,3 +296,4 @@ fun BottomBar(navController: NavHostController) {
         )
     }
 }
+
